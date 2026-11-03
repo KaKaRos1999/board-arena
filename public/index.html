@@ -1,0 +1,1315 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>🎲 Board Arena | กระดานเซียนออนไลน์</title>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico?v=boardarena6">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png?v=boardarena6">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=boardarena6">
+  <link rel="apple-touch-icon" href="/favicon.png?v=boardarena6">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css?v=boardarena9">
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/game-engine.js"></script>
+  <script src="/chess-engine.js"></script>
+  <script src="/makruk-engine.js"></script>
+  <script src="/go-engine.js"></script>
+  <script src="/othello-engine.js"></script>
+  <script src="/gomoku-engine.js"></script>
+  <script src="/connect4-engine.js"></script>
+  <script src="/dokapon-engine.js?v=dokapon6"></script>
+  <script src="/rank-system.js"></script>
+  <script src="/sound.js"></script>
+  <script src="/ambient.js"></script>
+</head>
+<body>
+
+  <!-- Ambient Particles Background Canvas -->
+  <canvas id="ambientCanvas"></canvas>
+
+  <!-- Header -->
+  <header class="app-header">
+    <div class="logo-area" id="logoBtn">
+      <span class="logo-icon">🎲</span>
+      <div style="display: flex; flex-direction: column; line-height: 1.1;">
+        <span class="logo-text">Board Arena</span>
+        <span style="font-size: 10px; font-weight: 700; color: #38bdf8; letter-spacing: 0.5px;">กระดานเซียนออนไลน์</span>
+      </div>
+    </div>
+
+    <!-- TOP NAVIGATION & GAME DROPDOWN (Matches user screenshot style!) -->
+    <div class="header-nav-area" id="headerNavArea">
+      <!-- 1. HOME TAB (with glowing cyan indicator) -->
+      <button class="nav-tab-btn active" id="btnNavHome" type="button" title="หน้าหลัก" onclick="window.switchToLobbyView &amp;&amp; window.switchToLobbyView()">
+        <span class="nav-tab-label">หน้าหลัก</span>
+        <span class="nav-tab-indicator"></span>
+      </button>
+
+      <!-- 2. GAME DROPDOWN TRIGGER (Matches BUILD LAB ▾ style) -->
+      <div class="nav-dropdown-wrapper" id="gameNavDropdownWrapper">
+        <button class="nav-tab-btn nav-dropdown-btn" id="btnGameDropdownToggle" type="button" title="คลิกเพื่อเลือกเกมกระดาน">
+          <span class="nav-tab-icon" id="menuCurrentIcon">🔴</span>
+          <span class="nav-tab-label" id="menuCurrentTitle">หมากฮอสไทย</span>
+          <span class="nav-dropdown-arrow">▾</span>
+        </button>
+
+        <!-- FLOATING DROPDOWN MENU (Styled exactly like user's screenshot) -->
+        <div class="nav-dropdown-menu" id="gameNavDropdownMenu" style="display: none;">
+          <!-- Category Tabs at Top of Dropdown -->
+          <div class="nav-dropdown-categories" id="dropdownCatTabs">
+            <!-- Rendered dynamically (ทั้งหมด, กระดานไทย, ยุทธศาสตร์, เล่นเร็ว, ปาร์ตี้) -->
+          </div>
+
+          <!-- Vertical Game List with Hairlines -->
+          <div class="nav-dropdown-list" id="dropdownGamesList">
+            <!-- Rendered dynamically -->
+          </div>
+
+          <!-- Footer for Future Games -->
+          <div class="nav-dropdown-footer">
+            <span class="footer-sparkle">✨</span>
+            <div class="footer-text">
+              <strong>เตรียมพบเกมใหม่เร็วๆ นี้</strong>
+              <span>เพิ่มเกมใหม่ได้ไม่จำกัดตามหมวดหมู่</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <!-- Player Profile & Auth Widget -->
+      <div id="userProfileWidget" class="user-profile-widget">
+        <div id="userGuestBox">
+          <button class="auth-header-btn" id="btnOpenAuth" title="เข้าสู่ระบบเพื่อเก็บข้อมูลและสถิติ">
+            <span>🔑</span> เข้าสู่ระบบ
+          </button>
+        </div>
+        <div id="userLoggedInBox" style="display: none;" title="คลิกเพื่อจัดการโปรไฟล์และอวตาร">
+          <div class="user-avatar-badge" id="btnOpenProfile">
+            <div class="header-avatar-frame frame_wood" id="headerAvatarFrame">
+              <span class="header-avatar-icon" id="headerAvatarIcon">🐱</span>
+            </div>
+            <div class="user-meta-compact">
+              <div class="user-name-line">
+                <span class="user-display-name" id="headerUserName">ผู้เล่น</span>
+                <span class="user-level-badge" id="headerUserLevel">Lv.1</span>
+              </div>
+              <div class="user-wallets">
+                <span class="wallet-pill coins">🪙 <span id="headerUserCoins">1,000</span></span>
+                <span class="wallet-pill gems">💎 <span id="headerUserGems">50</span></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Shop Button -->
+      <button class="icon-btn shop-btn" id="shopBtn" title="ร้านค้าอวตาร กรอบรูป และไอเทม">
+        <span>🛒</span> ร้านค้า
+      </button>
+
+      <!-- Player Rank Button -->
+      <button class="rank-header-pill" id="rankBtn" title="ดูข้อมูลยศ สถิติ และตารางอันดับ">
+        <span class="rank-header-badge" id="headerRankBadge">🥉</span>
+        <span class="rank-header-name" id="headerRankTitle">ทองแดง III</span>
+        <span class="rank-header-rp" id="headerRankRp">1,200 RP</span>
+      </button>
+
+      <button class="icon-btn" id="themeBtn" title="เลือกธีมและสไตล์ตัวหมาก">
+        <span>🎨</span> สไตล์
+      </button>
+      <button class="icon-btn" id="quickRandomBtn" title="สุ่มสไตล์กระดานและตัวหมากทันที">
+        <span>🎲</span>
+      </button>
+      <button class="icon-btn" id="soundBtn" title="เปิด/ปิดเสียง">
+        <span id="soundIcon">🔊</span>
+      </button>
+      <button class="icon-btn" id="rulesBtn">
+        <span>📖</span> กติกา
+      </button>
+      <div id="roomPill" class="icon-btn primary" style="display: none;" title="คลิกเพื่อคัดลอกรหัสห้อง">
+        <span>🔗</span> ห้อง: <strong id="headerRoomCode">------</strong>
+        <span id="headerPasswordBadge" style="display: none; margin-left: 6px; padding: 2px 7px; background: rgba(0,0,0,0.4); border: 1px solid rgba(251,191,36,0.3); border-radius: 6px; color: #fde047; font-size: 11px; font-weight: 700; align-items: center; gap: 3px;">🔒 <span id="headerRoomPassword"></span></span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Area -->
+  <main class="main-content">
+
+    <!-- VIEW 1: LOBBY -->
+    <div id="lobbyView" class="lobby-card">
+      
+      <div class="lobby-hero">
+        <div class="hero-emblem-wrapper">
+          <div class="hero-emblem-badge" id="hubHeroBadge">
+            <span id="hubHeroIcon">🔴</span>
+          </div>
+          <span class="hero-game-tag" id="hubHeroTag">🔥 คลาสสิกยอดนิยม</span>
+        </div>
+        <h1 class="lobby-title" id="hubHeroTitle">หมากฮอสไทย (Thai Checkers)</h1>
+        <p class="lobby-subtitle" id="hubHeroSubtitle">เล่นง่าย ชวนเพื่อนด้วยลิงก์หรือสแกน QR Code ทันที<br>หรือฝึกซ้อมกับบอท AI สุดฉลาด!</p>
+      </div>
+
+      <div class="mode-grid">
+        <button class="mode-btn highlight" id="btnModeOnline">
+          <div class="mode-icon">👥</div>
+          <div class="mode-info">
+            <h3>เล่นออนไลน์กับเพื่อน</h3>
+            <p>สร้างห้องส่งลิงก์ชวนเพื่อน หรือใส่รหัสเข้าห้อง</p>
+          </div>
+        </button>
+
+        <button class="mode-btn" id="btnModeAI">
+          <div class="mode-icon">🤖</div>
+          <div class="mode-info">
+            <h3>เล่นกับคอม (บอท AI)</h3>
+            <p>ฝึกฝนฝีมือ เลือกความยากได้ 3 ระดับ</p>
+          </div>
+        </button>
+
+        <button class="mode-btn" id="btnModePassPlay">
+          <div class="mode-icon">📱</div>
+          <div class="mode-info">
+            <h3>เล่น 2 คนในเครื่องเดียวกัน</h3>
+            <p>ผลัดกันเดินบนหน้าจอเดียวกัน ไม่ต้องต่อเน็ต</p>
+          </div>
+        </button>
+      </div>
+
+      <div id="hubHeroTip" style="text-align: center; font-size: 13px; color: var(--text-secondary); margin-bottom: 24px;">
+        กติกาหมากฮอสไทยแท้: 8 ตัวต่อฝ่าย • กินบังคับ • ฮอสบินได้ทุกระยะ
+      </div>
+
+      <!-- ROOM BROWSER / LOBBY ACTIVE ROOMS LIST -->
+      <div class="lobby-rooms-section">
+        <div class="lobby-rooms-header">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 20px;">🏠</span>
+            <h3 style="font-size: 16px; font-weight: 700; margin: 0; color: #f8fafc;">ห้องประลองสดที่เปิดอยู่</h3>
+            <span class="room-count-badge" id="lobbyRoomCountBadge">0 ห้อง</span>
+          </div>
+          <button class="icon-btn" id="btnRefreshLobbyRooms" style="padding: 4px 10px; font-size: 12px;">
+            🔄 รีเฟรช
+          </button>
+        </div>
+
+        <div class="lobby-rooms-list" id="lobbyRoomsList">
+          <div class="lobby-rooms-empty">
+            <span>📭</span> ยังไม่มีห้องเปิดอยู่ กด "เล่นออนไลน์กับเพื่อน" เพื่อสร้างห้องแรกได้เลย!
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VIEW 2: GAME BOARD -->
+    <div id="gameView" class="game-container" style="display: none;">
+      
+      <!-- Board Area -->
+      <div class="board-area">
+        
+        <!-- Top Player Bar (Opponent / Blue) -->
+        <div class="player-bar" id="topPlayerBar">
+          <div class="player-info">
+            <div class="player-avatar blue" id="topPlayerAvatarWrapper">
+              <div class="in-game-avatar-frame frame_wood" id="topPlayerAvatarFrame">
+                <span id="topPlayerAvatarIcon">🔵</span>
+              </div>
+            </div>
+            <div class="player-meta">
+              <div style="display: flex; align-items: center; gap: 6px;">
+                <span class="player-name" id="topPlayerName">ผู้เล่น 2</span>
+                <span class="player-rank-chip" id="topPlayerRankChip" style="display: none;">🥉 1200</span>
+              </div>
+              <span class="player-status-badge" id="topPlayerStatus">กำลังรอ...</span>
+            </div>
+          </div>
+          <div class="player-stats">
+            <div class="pieces-count">
+              <span>หมาก:</span> <strong id="topPiecesCount">8</strong>
+            </div>
+            <div class="timer-box" id="topTimerBox">--:--</div>
+          </div>
+        </div>
+
+        <!-- Opponent Disconnect Countdown & Claim Win Alert Banner -->
+        <div id="disconnectBanner" class="disconnect-banner" style="display: none;">
+          <div class="disconnect-info">
+            <span class="disconnect-pulse-dot"></span>
+            <div>
+              <div class="disconnect-title" id="disconnectTitle">⚠️ ฝ่ายตรงข้ามขาดการเชื่อมต่อ</div>
+              <div class="disconnect-sub">
+                รอเชื่อมต่อกลับ: <strong id="disconnectCountdown" class="disconnect-timer-num">15</strong> วินาที หรือกดเคลมชนะทันที
+              </div>
+            </div>
+          </div>
+          <button class="claim-win-btn" id="btnClaimWin">
+            <span>🏆</span> เคลมชนะทันที
+          </button>
+        </div>
+
+        <!-- The Checkerboard -->
+        <div class="board-wrapper">
+          <div class="board" id="boardGrid">
+            <!-- 64 squares rendered via JS -->
+          </div>
+        </div>
+
+        <!-- Bottom Player Bar (Me / Red) -->
+        <div class="player-bar" id="bottomPlayerBar">
+          <div class="player-info">
+            <div class="player-avatar red" id="bottomPlayerAvatarWrapper">
+              <div class="in-game-avatar-frame frame_wood" id="bottomPlayerAvatarFrame">
+                <span id="bottomPlayerAvatarIcon">🔴</span>
+              </div>
+            </div>
+            <div class="player-meta">
+              <div style="display: flex; align-items: center; gap: 6px;">
+                <span class="player-name" id="bottomPlayerName">คุณ (สีแดง)</span>
+                <span class="player-rank-chip" id="bottomPlayerRankChip">🥉 1200</span>
+              </div>
+              <span class="player-status-badge" id="bottomPlayerStatus">ตาของคุณ</span>
+            </div>
+          </div>
+          <div class="player-stats">
+            <div class="pieces-count">
+              <span>หมาก:</span> <strong id="bottomPiecesCount">8</strong>
+            </div>
+            <div class="timer-box" id="bottomTimerBox">--:--</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Sidebar Controls & Info -->
+      <div class="game-sidebar">
+        
+        <div class="sidebar-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+            <span style="font-size: 13px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase;">
+              ห้องแข่งขัน: <span id="sidebarRoomId" style="color: #fbbf24;">-</span>
+              <span id="sidebarPasswordBadge" style="display: none; margin-left: 6px; color: #fde047; font-size: 12px; font-weight: 700;">(🔒 <span id="sidebarRoomPassword"></span>)</span>
+            </span>
+            <button class="icon-btn primary" id="btnShareRoom" style="padding: 4px 10px; font-size: 12px;">
+              📤 ชวนเพื่อน
+            </button>
+          </div>
+
+          <!-- In-game action buttons -->
+          <div class="action-buttons-grid">
+            <button class="control-btn" id="btnPassTurn" style="display: none; background: #3b82f6; color: #fff; font-weight: 700;">
+              ⏭️ ผ่านตาเดิน (Pass)
+            </button>
+            <button class="control-btn" id="btnCountScore" style="display: none; background: linear-gradient(135deg, #10b981, #059669); color: #fff; font-weight: 700;">
+              📊 นับแต้มจบเกม
+            </button>
+            <button class="control-btn" id="btnSidebarTheme">
+              🎨 เปลี่ยนสไตล์
+            </button>
+            <button class="control-btn" id="btnSidebarRandom">
+              🎲 สุ่มสไตล์
+            </button>
+            <button class="control-btn" id="btnFlipBoard">
+              🔄 หมุนกระดาน
+            </button>
+            <button class="control-btn" id="btnOfferDraw">
+              🤝 ขอเสมอ
+            </button>
+            <button class="control-btn danger" id="btnResign">
+              🏳️ ยอมแพ้
+            </button>
+            <button class="control-btn" id="btnLeaveGame">
+              🚪 ออกจากเกม
+            </button>
+          </div>
+
+          <!-- Quick Emoji Reactions -->
+          <div class="emoji-bar">
+            <button class="emoji-btn" data-emoji="👍" title="ยอดเยี่ยม">👍</button>
+            <button class="emoji-btn" data-emoji="🔥" title="ร้อนแรง">🔥</button>
+            <button class="emoji-btn" data-emoji="👑" title="เข้าฮอส">👑</button>
+            <button class="emoji-btn" data-emoji="😮" title="ตกใจ">😮</button>
+            <button class="emoji-btn" data-emoji="👏" title="ปรบมือ">👏</button>
+            <button class="emoji-btn" data-emoji="😎" title="ชิลๆ">😎</button>
+            <button class="emoji-btn" data-emoji="😭" title="เสียดาย">😭</button>
+          </div>
+        </div>
+
+        <!-- Move History -->
+        <div class="sidebar-card">
+          <div style="font-size: 13px; font-weight: 700; color: var(--text-secondary); margin-bottom: 10px; text-transform: uppercase;">
+            บันทึกตาเดิน (Moves History)
+          </div>
+          <div class="history-list" id="historyList">
+            <div style="color: var(--text-secondary); text-align: center; padding: 12px;">เริ่มเกมใหม่ เดินได้ทันที</div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- MODAL: ONLINE MODE (CREATE OR JOIN ROOM) -->
+  <div class="modal-backdrop" id="onlineModal" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">เล่นออนไลน์กับเพื่อน</h2>
+        <button class="close-btn" data-close="onlineModal">✕</button>
+      </div>
+
+      <div style="display: flex; gap: 8px; margin-bottom: 20px;">
+        <button class="pill-option active" id="tabCreateRoom">สร้างห้องใหม่</button>
+        <button class="pill-option" id="tabJoinRoom">เข้าร่วมห้อง</button>
+      </div>
+
+      <!-- Tab 1: Create Room -->
+      <div id="paneCreateRoom">
+        <div class="form-group">
+          <label class="form-label">ชื่อของคุณ</label>
+          <input type="text" id="createPlayerName" class="text-input" placeholder="พิมพ์ชื่อของคุณ..." value="ผู้เล่น 1" maxlength="15">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">เลือกประเภทเกม</label>
+          <div class="pill-select" id="createGameTypeSelect">
+            <div class="pill-option active" data-game="checkers">🔴 หมากฮอส</div>
+            <div class="pill-option" data-game="makruk">⚔️ หมากรุกไทย</div>
+            <div class="pill-option" data-game="chess">♟️ หมากรุกสากล</div>
+            <div class="pill-option" data-game="go">⚫⚪ หมากล้อม</div>
+            <div class="pill-option" data-game="othello">🟢⚪ โอเทลโล่</div>
+            <div class="pill-option" data-game="gomoku">🎯 หมากเรียง 5</div>
+            <div class="pill-option" data-game="connect4">🟡🔴 หมากเรียง 4</div>
+            <div class="pill-option" data-game="dokapon">🏰⚔️ โดกาปอง</div>
+          </div>
+        </div>
+
+        <div class="form-group" id="ruleSelectGroup">
+          <label class="form-label">รูปแบบกติกา</label>
+          <div class="pill-select" id="ruleSelect">
+            <div class="pill-option active" data-rule="thai">หมากฮอสไทย (8 ตัว)</div>
+            <div class="pill-option" data-rule="international">หมากฮอสสากล (12 ตัว)</div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">เวลาเดินต่อตา</label>
+          <div class="pill-select" id="timerSelect">
+            <div class="pill-option" data-time="30">30 วิ</div>
+            <div class="pill-option active" data-time="60">60 วิ</div>
+            <div class="pill-option" data-time="90">90 วิ</div>
+            <div class="pill-option" data-time="0">ไม่จำกัด</div>
+          </div>
+        </div>
+
+        <!-- Room Lock Toggle -->
+        <div class="form-group" style="background: rgba(15, 23, 42, 0.6); padding: 12px 14px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.08);">
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <label for="checkLockRoom" style="font-size: 13.5px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+              <span>🔒 ล็อคห้องด้วยรหัสผ่าน (Private)</span>
+            </label>
+            <input type="checkbox" id="checkLockRoom" style="width: 18px; height: 18px; cursor: pointer; accent-color: #f59e0b;">
+          </div>
+          <div id="roomPasswordBox" style="display: none; margin-top: 10px;">
+            <input type="password" id="createRoomPassword" class="text-input" placeholder="ตั้งรหัสผ่านห้อง (เช่น 1234)" maxlength="20">
+            <div style="font-size: 11px; color: var(--text-secondary); margin-top: 4px;">ผู้ที่จะเข้าเล่นต้องกรอกรหัสผ่านนี้ก่อนเข้าห้อง</div>
+          </div>
+        </div>
+
+        <button class="primary-action-btn" id="btnSubmitCreateRoom">
+          <span>✨</span> สร้างห้องแล้วรับลิงก์ชวนเพื่อน
+        </button>
+      </div>
+
+      <!-- Tab 2: Join Room -->
+      <div id="paneJoinRoom" style="display: none;">
+        <div class="form-group">
+          <label class="form-label">ชื่อของคุณ</label>
+          <input type="text" id="joinPlayerName" class="text-input" placeholder="พิมพ์ชื่อของคุณ..." value="ผู้เล่น 2" maxlength="15">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">รหัสห้อง (6 หลัก)</label>
+          <input type="text" id="inputRoomCode" class="text-input" placeholder="เช่น ABC123" maxlength="6" style="text-transform: uppercase; font-weight: 700; letter-spacing: 2px;">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">รหัสผ่านห้อง (ถ้าห้องถูกล็อค)</label>
+          <input type="password" id="joinRoomPassword" class="text-input" placeholder="ใส่รหัสผ่านหากห้องล็อค" maxlength="20">
+        </div>
+
+        <button class="primary-action-btn blue" id="btnSubmitJoinRoom">
+          <span>🚀</span> เข้าห้องเลย
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MODAL: PLAY VS AI CONFIG -->
+  <div class="modal-backdrop" id="aiModal" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">เล่นกับคอม (บอท AI)</h2>
+        <button class="close-btn" data-close="aiModal">✕</button>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">ระดับความยาก</label>
+        <div class="pill-select" id="aiDifficultySelect">
+          <div class="pill-option" data-diff="easy">ง่าย</div>
+          <div class="pill-option active" data-diff="medium">ปานกลาง</div>
+          <div class="pill-option" data-diff="hard">เซียน</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">เลือกสีหมาก</label>
+        <div class="pill-select" id="aiSideSelect">
+          <div class="pill-option active" data-side="red">สีแดง (เดินก่อน)</div>
+          <div class="pill-option" data-side="blue">สีน้ำเงิน (เดินหลัง)</div>
+        </div>
+      </div>
+
+      <button class="primary-action-btn" id="btnStartAIGame">
+        <span>🎮</span> เริ่มเล่นทันที
+      </button>
+    </div>
+  </div>
+
+  <!-- MODAL: SHARE ROOM / INVITE FRIEND -->
+  <div class="modal-backdrop" id="shareModal" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">ชวนเพื่อนเข้ามาเล่น</h2>
+        <button class="close-btn" data-close="shareModal">✕</button>
+      </div>
+
+      <p style="color: var(--text-secondary); font-size: 14px; text-align: center; margin-bottom: 16px;">
+        ส่งรหัสห้องหรือแชร์ลิงก์นี้ให้เพื่อน เมื่อเพื่อนเปิดลิงก์จะเข้าห้องและเริ่มแข่งได้ทันที!
+      </p>
+
+      <div class="room-code-display">
+        <div>
+          <div style="font-size: 11px; color: var(--text-secondary); text-transform: uppercase;">รหัสห้อง</div>
+          <div class="code-digits" id="modalRoomCode">------</div>
+        </div>
+        <button class="copy-badge-btn" id="btnCopyCode">คัดลอกรหัส</button>
+      </div>
+
+      <!-- Password Display Box for Host / Locked Room -->
+      <div class="room-code-display" id="modalPasswordBox" style="display: none; border-color: rgba(245, 158, 11, 0.4); background: rgba(245, 158, 11, 0.08);">
+        <div>
+          <div style="font-size: 11px; color: #fbbf24; text-transform: uppercase; font-weight: 700;">🔒 รหัสผ่านเข้าห้อง</div>
+          <div class="code-digits" id="modalRoomPassword" style="color: #fde047; letter-spacing: 2px;">------</div>
+        </div>
+        <button class="copy-badge-btn" id="btnCopyPassword" style="background: #f59e0b; border-color: #d97706; color: #fff;">คัดลอกรหัสผ่าน</button>
+      </div>
+
+      <div style="margin-bottom: 16px;">
+        <button class="primary-action-btn blue" id="btnCopyLink">
+          <span>📋</span> คัดลอกลิงก์ชวนเพื่อน (1 คลิก)
+        </button>
+      </div>
+
+      <!-- QR Code -->
+      <div class="qr-container">
+        <img id="qrImage" class="qr-image" alt="QR Code สำหรับชวนเพื่อน">
+        <span style="font-size: 12px; color: var(--text-secondary);">
+          📱 เพื่อนสามารถใช้มือถือสแกน QR Code นี้ เพื่อเข้าเล่นได้ทันที
+        </span>
+      </div>
+
+      <div id="lanNotice" style="display: none; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 10px; font-size: 12px; color: #93c5fd; margin-top: 10px;">
+        💡 <strong>คำแนะนำ:</strong> หากเพื่อนเล่นใน Wi-Fi เดียวกัน สามารถเปิดลิงก์ที่แสดงเพื่อเชื่อมต่อได้ทันที
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MODAL: ROOM PASSWORD PROMPT -->
+  <div class="modal-backdrop" id="passwordPromptModal" style="display: none;">
+    <div class="modal-content" style="max-width: 420px; text-align: center;">
+      <div style="font-size: 52px; margin-bottom: 8px;">🔒</div>
+      <h2 class="modal-title" style="margin-bottom: 4px; font-size: 20px;">ห้องนี้ล็อคด้วยรหัสผ่าน</h2>
+      <p style="color: var(--text-secondary); font-size: 13px; margin-bottom: 18px;">
+        ห้องรหัส <strong id="promptRoomCode" style="color: #fbbf24;">------</strong> โดย <span id="promptHostName">-</span>
+      </p>
+
+      <div class="form-group" style="text-align: left;">
+        <label class="form-label">กรุณาใส่รหัสผ่านห้อง</label>
+        <div style="position: relative;">
+          <input type="password" id="inputPromptPassword" class="text-input" placeholder="ใส่รหัสผ่านห้อง..." maxlength="20" style="text-align: center; font-size: 18px; letter-spacing: 2px; padding-right: 40px;">
+          <button type="button" id="btnTogglePromptPass" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: none; font-size: 18px; cursor: pointer;" title="แสดง/ซ่อนรหัสผ่าน">👁️</button>
+        </div>
+        <div id="promptErrorMsg" style="color: #f87171; font-size: 13px; font-weight: 600; margin-top: 8px; text-align: center; display: none;"></div>
+      </div>
+
+      <div style="display: flex; gap: 10px; margin-top: 16px;">
+        <button class="primary-action-btn" id="btnSubmitPromptPassword" type="button" style="flex: 2;">
+          <span>🔓</span> ปลดล็อคเข้าห้อง
+        </button>
+        <button class="control-btn close-btn" id="btnCancelPromptPassword" data-close="passwordPromptModal" type="button" style="flex: 1;">
+          ยกเลิก
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: GAME OVER -->
+  <div class="modal-backdrop" id="gameOverModal" style="display: none;">
+    <div class="modal-content" style="text-align: center;">
+      <div style="font-size: 64px; margin-bottom: 12px;" id="gameOverIcon">🏆</div>
+      <h2 class="modal-title" id="gameOverTitle" style="font-size: 26px; margin-bottom: 8px;">ผู้ชนะ: สีแดง</h2>
+      <p style="color: var(--text-secondary); font-size: 15px; margin-bottom: 18px;" id="gameOverReason">หมากสีน้ำเงินหมดกระดาน</p>
+
+      <!-- Rank & MMR Update Card -->
+      <div class="rank-result-box" id="gameOverRankBox" style="display: none;">
+        <div class="rank-result-header">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <span class="rank-result-badge-icon" id="gameOverRankBadge">🥉</span>
+            <div style="text-align: left;">
+              <div class="rank-result-tier-title" id="gameOverRankTier">ทองแดง III</div>
+              <div class="rank-result-mmr-text" id="gameOverRankMmr">1,220 RP</div>
+            </div>
+          </div>
+          <div class="rank-result-delta-pill" id="gameOverRankDelta">+20 RP</div>
+        </div>
+        <div class="rank-progress-container">
+          <div class="rank-progress-fill" id="gameOverRankProgressBar" style="width: 30%;"></div>
+        </div>
+        <div class="rank-progress-label" id="gameOverRankProgressLabel">อีก 40 RP เพื่อเลื่อนยศสู่ ทองแดง II</div>
+      </div>
+
+      <!-- Match Rewards & EXP Progression Card -->
+      <div class="match-reward-card" id="gameOverRewardCard" style="display: none;">
+        <div class="reward-title">🎁 รางวัลจากการแข่งขัน</div>
+        <div class="reward-pills-row">
+          <span class="reward-pill coins">🪙 +<span id="rewardCoinsVal">0</span> เหรียญ</span>
+          <span class="reward-pill gems">💎 +<span id="rewardGemsVal">0</span> เพชร</span>
+          <span class="reward-pill exp">⭐ +<span id="rewardExpVal">0</span> EXP</span>
+        </div>
+        <div id="rewardLevelUpBanner" class="level-up-banner" style="display: none;">
+          🎉 ยินดีด้วย! เลเวลอัปเป็น Level <span id="rewardNewLevel">2</span>! ได้รับโบนัสพิเศษ!
+        </div>
+      </div>
+
+      <!-- Go Score Breakdown Card -->
+      <div id="goScoreCard" style="display: none; background: rgba(15, 23, 42, 0.7); border: 1.5px solid rgba(56, 189, 248, 0.35); border-radius: 12px; padding: 14px; margin-bottom: 18px; text-align: left;">
+        <div style="font-weight: 800; color: #38bdf8; font-size: 14px; margin-bottom: 10px; text-align: center; display: flex; align-items: center; justify-content: center; gap: 6px;">
+          <span>📊</span> สรุปผลการนับแต้มหมากล้อม
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 13px;">
+          <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; border-left: 3px solid #64748b;">
+            <div style="font-weight: 700; color: #f8fafc; margin-bottom: 4px;">⚫ ฝ่ายดำ (Black)</div>
+            <div style="font-size: 18px; font-weight: 800; color: #38bdf8;" id="goScoreBlack">0 แต้ม</div>
+            <div style="font-size: 11px; color: var(--text-secondary); margin-top: 4px; line-height: 1.4;">
+              พื้นที่: <span id="goTerritoryBlack">0</span> • บนกระดาน: <span id="goStonesBlack">0</span><br>
+              ล้อมกิน: <span id="goCapturesBlack">0</span> เม็ด
+            </div>
+          </div>
+          <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; border-left: 3px solid #cbd5e1;">
+            <div style="font-weight: 700; color: #f8fafc; margin-bottom: 4px;">⚪ ฝ่ายขาว (White)</div>
+            <div style="font-size: 18px; font-weight: 800; color: #facc15;" id="goScoreWhite">0 แต้ม</div>
+            <div style="font-size: 11px; color: var(--text-secondary); margin-top: 4px; line-height: 1.4;">
+              พื้นที่: <span id="goTerritoryWhite">0</span> • บนกระดาน: <span id="goStonesWhite">0</span><br>
+              ล้อมกิน: <span id="goCapturesWhite">0</span> • โคมิ: +5.5
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <button class="primary-action-btn" id="btnGameOverRematch">
+          <span>🔄</span> ขอเล่นอีกรอบ (<span id="rematchCount">0</span>/2)
+        </button>
+        <button class="control-btn" id="btnGameOverLobby">
+          <span>🏠</span> กลับหน้าหลัก
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: RULES -->
+  <div class="modal-backdrop" id="rulesModal" style="display: none;">
+    <div class="modal-content" style="max-height: 85vh; overflow-y: auto;">
+      <div class="modal-header">
+        <h2 class="modal-title">📖 กติกาหมากฮอสไทย</h2>
+        <button class="close-btn" data-close="rulesModal">✕</button>
+      </div>
+
+      <div style="font-size: 14px; line-height: 1.7; color: #cbd5e1; display: flex; flex-direction: column; gap: 14px;">
+        <p><strong>1. การจัดกระดาน:</strong> ฝ่ายละ 8 ตัว (2 แถวแรกของแต่ละฝ่าย) เดินบนช่องตารางสีเข้ม สีแดงเป็นฝ่ายเดินก่อน</p>
+        <p><strong>2. การเดินของเบี้ย:</strong> เดินทแยงไปข้างหน้าทีละ 1 ช่อง</p>
+        <p><strong>3. การกินของเบี้ย:</strong> หากมีหมากฝ่ายตรงข้ามอยู่ช่องทแยงด้านหน้า และช่องถัดไปว่าง ต้องกระโดดข้ามเพื่อกิน (เบี้ยกินเดินหน้าเท่านั้น)</p>
+        <p><strong>4. กติกากินบังคับ (Mandatory Capture):</strong> หากมีตาที่สามารถกินได้ <u>ต้องกิน</u> ไม่สามารถเลือกเดินตาธรรมดาได้</p>
+        <p><strong>5. การกินต่อเนื่อง (Multi-jump):</strong> หากกินแล้วยังสามารถกินต่อได้ ต้องกินต่อเนื่องจนกว่าจะไม่มีตากิน</p>
+        <p><strong>6. การเข้าฮอส (King):</strong> เมื่อเบี้ยเดินไปถึงแถวสุดท้ายของฝ่ายตรงข้าม จะกลายเป็นฮอสทันที และจบเทิร์นนั้น</p>
+        <p><strong>7. การเดินและการกินของฮอส (Flying King):</strong> ฮอสสามารถบินทแยงไปได้ทุกทิศทางทั้งหน้าและหลังกี่ช่องก็ได้ และเมื่อกินหมากคู่แข่ง สามารถเลือกหยุดที่ช่องว่างใดก็ได้ที่อยู่หลังตัวที่ถูกกินบนแนวทแยงเดียวกัน</p>
+        <p><strong>8. การแพ้-ชนะ:</strong> ฝ่ายใดถูกกินจนหมดกระดาน หรือไม่มีตาเดินที่ถูกต้อง จะเป็นฝ่ายแพ้</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: THEMES & SKINS CUSTOMIZER -->
+  <div class="modal-backdrop" id="themeModal" style="display: none;">
+    <div class="modal-content" style="max-height: 85vh; overflow-y: auto;">
+      <div class="modal-header">
+        <h2 class="modal-title">🎨 ปรับแต่งสนามประลอง กระดาน และตัวหมาก</h2>
+        <button class="close-btn" data-close="themeModal">✕</button>
+      </div>
+
+      <!-- SECTION 1: ARENA / BATTLEFIELD BACKGROUND -->
+      <div style="margin-bottom: 24px;">
+        <div class="form-label" style="display: flex; justify-content: space-between; align-items: center;">
+          <span>1. เลือกสนามประลอง / บรรยากาศ (Battlefield Arena)</span>
+          <button class="icon-btn" id="btnRandomArenaOnly" style="padding: 2px 8px; font-size: 11px;">🎲 สุ่มเฉพาะสนาม</button>
+        </div>
+        <div class="theme-picker-grid" id="arenasGrid">
+          <!-- Anime Autumn -->
+          <div class="theme-option-card active" data-arena="arena-anime-autumn">
+            <div class="theme-preview-box" style="background: url('/images/anime-autumn.png') center/cover no-repeat; border: 1.5px solid #f59e0b;">
+              <div style="display: flex; align-items: center; justify-content: center; font-size: 20px;">🍁</div>
+              <div style="display: flex; align-items: center; justify-content: center; font-size: 16px;">👘</div>
+            </div>
+            <span class="theme-card-name">🍁 อนิเมะใบไม้เปลี่ยนสี</span>
+          </div>
+
+          <!-- Haunted Graveyard -->
+          <div class="theme-option-card" data-arena="arena-graveyard">
+            <div class="theme-preview-box" style="background: url('/images/graveyard-bg.png') center/cover no-repeat; border: 1.5px solid #4ade80;">
+              <div style="display: flex; align-items: center; justify-content: center; font-size: 20px;">⚰️</div>
+              <div style="display: flex; align-items: center; justify-content: center; font-size: 16px;">👻</div>
+            </div>
+            <span class="theme-card-name">⚰️ สุสานผีสิง</span>
+          </div>
+
+          <!-- Zen Dojo -->
+          <div class="theme-option-card" data-arena="arena-dojo">
+            <div class="theme-preview-box" style="background: url('/images/dojo-bg.png') center/cover no-repeat; border: 1.5px solid #fdba74;">
+              <div style="display: flex; align-items: center; justify-content: center; font-size: 20px;">🏯</div>
+              <div style="display: flex; align-items: center; justify-content: center; font-size: 16px;">🌸</div>
+            </div>
+            <span class="theme-card-name">🏯 โรงเตี๊ยมซากุระ</span>
+          </div>
+
+          <!-- Sci-Fi Space -->
+          <div class="theme-option-card" data-arena="arena-space">
+            <div class="theme-preview-box" style="background: url('/images/space-bg.png') center/cover no-repeat; border: 1.5px solid #8b5cf6;">
+              <div style="display: flex; align-items: center; justify-content: center; font-size: 20px;">🌌</div>
+              <div style="display: flex; align-items: center; justify-content: center; font-size: 16px;">✨</div>
+            </div>
+            <span class="theme-card-name">🌌 ฐานทัพอวกาศ</span>
+          </div>
+
+          <!-- Enchanted Forest -->
+          <div class="theme-option-card" data-arena="arena-forest">
+            <div class="theme-preview-box" style="background: url('/images/forest-bg.png') center/cover no-repeat; border: 1.5px solid #34d399;">
+              <div style="display: flex; align-items: center; justify-content: center; font-size: 20px;">🌲</div>
+              <div style="display: flex; align-items: center; justify-content: center; font-size: 16px;">✨</div>
+            </div>
+            <span class="theme-card-name">🌲 ป่าเวทมนตร์</span>
+          </div>
+
+          <!-- Volcano Arena -->
+          <div class="theme-option-card" data-arena="arena-volcano">
+            <div class="theme-preview-box" style="background: url('/images/volcano-bg.png') center/cover no-repeat; border: 1.5px solid #ef4444;">
+              <div style="display: flex; align-items: center; justify-content: center; font-size: 20px;">🌋</div>
+              <div style="display: flex; align-items: center; justify-content: center; font-size: 16px;">🔥</div>
+            </div>
+            <span class="theme-card-name">🌋 ลานประลองลาวา</span>
+          </div>
+
+          <!-- Royal Palace -->
+          <div class="theme-option-card" data-arena="arena-palace">
+            <div class="theme-preview-box" style="background: url('/images/palace-bg.png') center/cover no-repeat; border: 1.5px solid #eab308;">
+              <div style="display: flex; align-items: center; justify-content: center; font-size: 20px;">🏰</div>
+              <div style="display: flex; align-items: center; justify-content: center; font-size: 16px;">👑</div>
+            </div>
+            <span class="theme-card-name">🏰 ท้องพระโรงหลวง</span>
+          </div>
+
+          <!-- Sunset Beach -->
+          <div class="theme-option-card" data-arena="arena-sunset">
+            <div class="theme-preview-box" style="background: url('/images/sunset-bg.png') center/cover no-repeat; border: 1.5px solid #fb7185;">
+              <div style="display: flex; align-items: center; justify-content: center; font-size: 20px;">🏝️</div>
+              <div style="display: flex; align-items: center; justify-content: center; font-size: 16px;">🌅</div>
+            </div>
+            <span class="theme-card-name">🏝️ ชายหาดซันเซ็ต</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 2: BOARD THEME -->
+      <div style="margin-bottom: 24px;">
+        <div class="form-label" style="display: flex; justify-content: space-between; align-items: center;">
+          <span>2. เลือกธีมกระดาน (Board Theme)</span>
+          <button class="icon-btn" id="btnRandomThemeOnly" style="padding: 2px 8px; font-size: 11px;">🎲 สุ่มเฉพาะกระดาน</button>
+        </div>
+        <div class="theme-picker-grid" id="boardThemesGrid">
+          <!-- Anime Autumn Board -->
+          <div class="theme-option-card active" data-theme="theme-anime-autumn">
+            <div class="theme-preview-box" style="background: url('/images/anime-autumn.png') center/cover no-repeat; border: 1.5px solid #f59e0b;">
+              <div style="background: rgba(255, 255, 255, 0.35); backdrop-filter: blur(2px);"></div>
+              <div style="background: rgba(45, 18, 10, 0.65); backdrop-filter: blur(2px);"></div>
+            </div>
+            <span class="theme-card-name">🍁 อนิเมะใบไม้เปลี่ยนสี</span>
+          </div>
+
+          <!-- Tombstone Crypt -->
+          <div class="theme-option-card" data-theme="theme-graveyard-tomb">
+            <div class="theme-preview-box" style="background: url('/images/graveyard-bg.png') center/cover no-repeat; border: 1.5px solid #4ade80;">
+              <div style="background: rgba(148, 163, 184, 0.4); backdrop-filter: blur(2px);"></div>
+              <div style="background: rgba(9, 13, 22, 0.7); backdrop-filter: blur(2px); box-shadow: inset 0 0 8px #4ade80;"></div>
+            </div>
+            <span class="theme-card-name">⚰️ ศิลาสุสาน</span>
+          </div>
+
+          <!-- Zen Dojo Sakura -->
+          <div class="theme-option-card" data-theme="theme-classic-wood">
+            <div class="theme-preview-box" style="background: url('/images/dojo-bg.png') center/cover no-repeat; border: 1.5px solid #f59e0b;">
+              <div style="background: rgba(254, 243, 199, 0.4); backdrop-filter: blur(2px);"></div>
+              <div style="background: rgba(45, 18, 10, 0.65); backdrop-filter: blur(2px);"></div>
+            </div>
+            <span class="theme-card-name">🏯 เซนซากุระ</span>
+          </div>
+
+          <!-- Cosmic Space -->
+          <div class="theme-option-card" data-theme="theme-cosmic-space">
+            <div class="theme-preview-box" style="background: url('/images/space-bg.png') center/cover no-repeat; border: 1.5px solid #a855f7;">
+              <div style="background: rgba(237, 233, 254, 0.35); backdrop-filter: blur(2px);"></div>
+              <div style="background: rgba(15, 7, 40, 0.7); backdrop-filter: blur(2px); box-shadow: inset 0 0 8px #a855f7;"></div>
+            </div>
+            <span class="theme-card-name">🌌 กาแล็กซีอวกาศ</span>
+          </div>
+
+          <!-- Enchanted Forest -->
+          <div class="theme-option-card" data-theme="theme-zen-matcha">
+            <div class="theme-preview-box" style="background: url('/images/forest-bg.png') center/cover no-repeat; border: 1.5px solid #10b981;">
+              <div style="background: rgba(236, 253, 245, 0.35); backdrop-filter: blur(2px);"></div>
+              <div style="background: rgba(6, 44, 32, 0.7); backdrop-filter: blur(2px); box-shadow: inset 0 0 8px #10b981;"></div>
+            </div>
+            <span class="theme-card-name">🌲 ป่าเวทมนตร์</span>
+          </div>
+
+          <!-- Volcano Lava -->
+          <div class="theme-option-card" data-theme="theme-volcano-lava">
+            <div class="theme-preview-box" style="background: url('/images/volcano-bg.png') center/cover no-repeat; border: 1.5px solid #ef4444;">
+              <div style="background: rgba(254, 215, 170, 0.35); backdrop-filter: blur(2px);"></div>
+              <div style="background: rgba(28, 10, 10, 0.72); backdrop-filter: blur(2px); box-shadow: inset 0 0 8px #ef4444;"></div>
+            </div>
+            <span class="theme-card-name">🌋 ลาวาภูเขาไฟ</span>
+          </div>
+
+          <!-- Royal Palace -->
+          <div class="theme-option-card" data-theme="theme-royal-marble">
+            <div class="theme-preview-box" style="background: url('/images/palace-bg.png') center/cover no-repeat; border: 1.5px solid #facc15;">
+              <div style="background: rgba(254, 240, 138, 0.4); backdrop-filter: blur(2px);"></div>
+              <div style="background: rgba(25, 5, 28, 0.7); backdrop-filter: blur(2px); box-shadow: inset 0 0 8px #facc15;"></div>
+            </div>
+            <span class="theme-card-name">🏰 ท้องพระโรงหลวง</span>
+          </div>
+
+          <!-- Sunset Beach -->
+          <div class="theme-option-card" data-theme="theme-sunset-beach">
+            <div class="theme-preview-box" style="background: url('/images/sunset-bg.png') center/cover no-repeat; border: 1.5px solid #fb7185;">
+              <div style="background: rgba(255, 241, 242, 0.35); backdrop-filter: blur(2px);"></div>
+              <div style="background: rgba(35, 12, 45, 0.68); backdrop-filter: blur(2px); box-shadow: inset 0 0 8px #fb7185;"></div>
+            </div>
+            <span class="theme-card-name">🏝️ ชายหาดซันเซ็ต</span>
+          </div>
+
+          <!-- Cyberpunk Neon -->
+          <div class="theme-option-card" data-theme="theme-neon-cyber">
+            <div class="theme-preview-box" style="border: 1.5px solid #06b6d4;">
+              <div style="background: #334155;"></div>
+              <div style="background: #030712; box-shadow: inset 0 0 8px #06b6d4;"></div>
+            </div>
+            <span class="theme-card-name">⚡ นีออนไซเบอร์</span>
+          </div>
+
+          <!-- Emerald Jade -->
+          <div class="theme-option-card" data-theme="theme-emerald-jade">
+            <div class="theme-preview-box" style="border: 1.5px solid #10b981;">
+              <div style="background: #ecfdf5;"></div>
+              <div style="background: #064e3b; box-shadow: inset 0 0 8px #10b981;"></div>
+            </div>
+            <span class="theme-card-name">✨ หยกมรกต</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-bottom: 24px;">
+        <div class="form-label" style="display: flex; justify-content: space-between; align-items: center;">
+          <span>2. เลือกสไตล์ตัวหมาก (Piece Skin)</span>
+          <button class="icon-btn" id="btnRandomSkinOnly" style="padding: 2px 8px; font-size: 11px;">🎲 สุ่มเฉพาะตัวหมาก</button>
+        </div>
+        <div class="theme-picker-grid" id="pieceSkinsGrid">
+          <!-- Graveyard Ghosts -->
+          <div class="theme-option-card active" data-skin="skin-graveyard-ghosts">
+            <div class="skin-preview-box" style="background: rgba(74, 222, 128, 0.15); border: 1px solid #4ade80;">
+              <span style="font-size: 26px;">👻</span>
+              <span style="font-size: 26px;">🔮</span>
+            </div>
+            <span class="theme-card-name">👻 ผีสุสานลอยตัว</span>
+          </div>
+
+          <!-- Nong TK Full-Body Character -->
+          <div class="theme-option-card" data-skin="skin-nong-tk">
+            <div class="skin-preview-box" style="background: rgba(220, 38, 38, 0.15); border: 1px solid #ef4444;">
+              <span style="font-size: 26px;">🧢</span>
+              <span style="font-size: 26px;">🎧</span>
+            </div>
+            <span class="theme-card-name">🧢 น้อง TK (โมเดล 3D ไม่กลม)</span>
+          </div>
+
+          <!-- Cute Pets (Cartoon Model) -->
+          <div class="theme-option-card" data-skin="skin-chibi-pets">
+            <div class="skin-preview-box">
+              <span style="font-size: 24px;">🐱</span>
+              <span style="font-size: 24px;">🐶</span>
+            </div>
+            <span class="theme-card-name">🐱 น้อนแมว & ชิบะ (โมเดลการ์ตูน)</span>
+          </div>
+
+          <!-- Cute Monsters (Cartoon Model) -->
+          <div class="theme-option-card" data-skin="skin-chibi-monsters">
+            <div class="skin-preview-box">
+              <span style="font-size: 24px;">👾</span>
+              <span style="font-size: 24px;">❄️</span>
+            </div>
+            <span class="theme-card-name">👾 มอนสเตอร์จิ๋ว (โมเดลการ์ตูน)</span>
+          </div>
+
+          <!-- Cute Ninjas (Cartoon Model) -->
+          <div class="theme-option-card" data-skin="skin-chibi-ninjas">
+            <div class="skin-preview-box">
+              <span style="font-size: 24px;">🥷</span>
+              <span style="font-size: 24px;">⚡</span>
+            </div>
+            <span class="theme-card-name">🥷 นินจาจิ๋ว (โมเดลการ์ตูน)</span>
+          </div>
+
+          <!-- Modern 3D -->
+          <div class="theme-option-card" data-skin="skin-modern-3d">
+            <div class="skin-preview-box">
+              <span style="font-size: 20px;">🔴</span>
+              <span style="font-size: 20px;">🔵</span>
+            </div>
+            <span class="theme-card-name">🔴 โมเดิร์น 3D</span>
+          </div>
+
+          <!-- Crystal Gem -->
+          <div class="theme-option-card" data-skin="skin-crystal-gem">
+            <div class="skin-preview-box">
+              <span style="font-size: 20px;">💎</span>
+              <span style="font-size: 20px;">🔷</span>
+            </div>
+            <span class="theme-card-name">💎 อัญมณีคริสตัล</span>
+          </div>
+
+          <!-- Cyber Neon Holo -->
+          <div class="theme-option-card" data-skin="skin-neon-holo">
+            <div class="skin-preview-box">
+              <span style="font-size: 20px;">🛸</span>
+              <span style="font-size: 20px;">⚡</span>
+            </div>
+            <span class="theme-card-name">⚡ โฮโลแกรมแสง</span>
+          </div>
+
+          <!-- Ancient Coins -->
+          <div class="theme-option-card" data-skin="skin-ancient-coins">
+            <div class="skin-preview-box">
+              <span style="font-size: 20px;">🪙</span>
+              <span style="font-size: 20px;">⚔️</span>
+            </div>
+            <span class="theme-card-name">🪙 เหรียญกษาปณ์ทอง</span>
+          </div>
+
+          <!-- Cute Creatures -->
+          <div class="theme-option-card" data-skin="skin-cute-creatures">
+            <div class="skin-preview-box">
+              <span style="font-size: 20px;">🐲</span>
+              <span style="font-size: 20px;">🐺</span>
+            </div>
+            <span class="theme-card-name">🐲 มังกร & สัตว์เทพ</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="background: rgba(15, 23, 42, 0.6); padding: 12px 16px; border-radius: 12px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between;">
+        <label for="checkAutoRandom" style="font-size: 14px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+          <span>🎲 สุ่มสไตล์กระดานและตัวหมากใหม่อัตโนมัติทุกเกม</span>
+        </label>
+        <input type="checkbox" id="checkAutoRandom" style="width: 18px; height: 18px; cursor: pointer; accent-color: #3b82f6;">
+      </div>
+
+      <div style="display: flex; gap: 10px;">
+        <button class="primary-action-btn" id="btnRandomBoth">
+          <span>🎲</span> สุ่มสไตล์ทั้งสองทันที
+        </button>
+        <button class="control-btn" data-close="themeModal" style="flex: 1;">
+          <span>✓</span> เสร็จสิ้น
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: RANK & STATS -->
+  <div class="modal-backdrop" id="rankModal" style="display: none;">
+    <div class="modal-content rank-modal-content" style="max-height: 85vh; overflow-y: auto;">
+      <div class="modal-header">
+        <h2 class="modal-title">🏆 สถิติ & ตารางจัดอันดับ</h2>
+        <button class="close-btn" data-close="rankModal">✕</button>
+      </div>
+
+      <!-- Rank Modal Tab Bar -->
+      <div class="rank-tab-bar">
+        <button class="rank-tab-btn active" data-tab="my-stats">
+          <span>📊</span> สถิติของฉัน
+        </button>
+        <button class="rank-tab-btn" data-tab="match-history">
+          <span>📜</span> ประวัติการแข่ง
+        </button>
+        <button class="rank-tab-btn" data-tab="leaderboard">
+          <span>👑</span> ตารางจัดอันดับ
+        </button>
+      </div>
+
+      <!-- TAB 1: MY STATS -->
+      <div class="rank-tab-pane active" id="paneMyStats">
+        <!-- Big Tier Banner -->
+        <div class="rank-hero-card" id="myRankHeroCard">
+          <div class="rank-hero-badge" id="myRankHeroBadge">🥉</div>
+          <div class="rank-hero-info">
+            <div class="rank-hero-tier" id="myRankHeroTier">ทองแดง III</div>
+            <div class="rank-hero-points"><strong id="myRankHeroMmr">1,200</strong> RP</div>
+            <div class="rank-hero-sub" id="myRankHeroNextTier">ต้องการอีก 60 RP เพื่อเลื่อนยศสู่ ทองแดง II</div>
+          </div>
+        </div>
+
+        <!-- Tier Progress Bar -->
+        <div class="tier-bar-wrapper">
+          <div class="tier-bar-labels">
+            <span id="tierBarCurrentLabel">ความคืบหน้า</span>
+            <span id="tierBarPercentLabel">0%</span>
+          </div>
+          <div class="tier-bar-bg">
+            <div class="tier-bar-fill" id="myTierProgressBar" style="width: 0%;"></div>
+          </div>
+        </div>
+
+        <!-- Change Player Name Input -->
+        <div class="form-group" style="margin-top: 14px; margin-bottom: 16px;">
+          <label class="form-label" style="font-size: 13px;">ชื่อผู้เล่นของคุณ</label>
+          <div style="display: flex; gap: 8px;">
+            <input type="text" id="inputProfileName" class="text-input" placeholder="ใส่ชื่อของคุณ..." maxlength="20" style="flex: 1;">
+            <button class="primary-action-btn" id="btnSaveProfileName" style="padding: 0 16px; font-size: 13px; width: auto;">บันทึก</button>
+          </div>
+        </div>
+
+        <!-- 6 Stats Cards Grid -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon">🎮</div>
+            <div class="stat-value" id="statMatches">0</div>
+            <div class="stat-label">เกมที่แข่งทั้งหมด</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">🏆</div>
+            <div class="stat-value" id="statRecord" style="color: #4ade80;">0W - 0L</div>
+            <div class="stat-label">ชนะ - แพ้ (เสมอ: <span id="statDraws">0</span>)</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">📈</div>
+            <div class="stat-value" id="statWinRate" style="color: #38bdf8;">0%</div>
+            <div class="stat-label">อัตราการชนะ (Win Rate)</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">🔥</div>
+            <div class="stat-value" id="statStreak" style="color: #f59e0b;">0</div>
+            <div class="stat-label">ชนะติดกัน (สูงสุด: <span id="statBestStreak">0</span>)</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">⚔️</div>
+            <div class="stat-value" id="statPiecesCaptured" style="color: #f43f5e;">0</div>
+            <div class="stat-label">หมากที่กินได้ทั้งหมด</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">👑</div>
+            <div class="stat-value" id="statKingsCrowned" style="color: #a855f7;">0</div>
+            <div class="stat-label">จำนวนฮอสที่เข้าได้</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 2: MATCH HISTORY -->
+      <div class="rank-tab-pane" id="paneMatchHistory" style="display: none;">
+        <div class="match-history-container" id="matchHistoryList">
+          <!-- Rendered dynamically via JS -->
+          <div style="text-align: center; color: var(--text-secondary); padding: 30px;">
+            ยังไม่มีประวัติการแข่งขัน เริ่มเล่นเลย!
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 3: LEADERBOARD -->
+      <div class="rank-tab-pane" id="paneLeaderboard" style="display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <span style="font-size: 13px; color: var(--text-secondary);">ตารางคะแนนสูงสุด 50 อันดับแรก</span>
+          <button class="icon-btn" id="btnRefreshLeaderboard" style="padding: 4px 10px; font-size: 12px;">🔄 รีเฟรช</button>
+        </div>
+        <div class="leaderboard-container">
+          <table class="leaderboard-table">
+            <thead>
+              <tr>
+                <th style="width: 44px; text-align: center;">อันดับ</th>
+                <th>ผู้เล่น</th>
+                <th style="text-align: center;">ยศ</th>
+                <th style="text-align: right;">RP / คะแนน</th>
+                <th style="text-align: right;">ชนะ/แข่ง</th>
+              </tr>
+            </thead>
+            <tbody id="leaderboardTableBody">
+              <!-- Rendered dynamically -->
+              <tr><td colspan="5" style="text-align: center; padding: 20px; color: var(--text-secondary);">กำลังโหลดตารางอันดับ...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MODAL: AUTH (LOGIN & REGISTER) -->
+  <div class="modal-backdrop" id="authModal" style="display: none;">
+    <div class="modal-content auth-modal-content" style="max-width: 440px;">
+      <div class="modal-header">
+        <h3 class="modal-title" style="display: flex; align-items: center; gap: 8px;">
+          <span>👑</span> ระบบสมาชิก & อวตาร
+        </h3>
+        <button class="close-btn" data-close="authModal">✕</button>
+      </div>
+
+      <!-- Auth Tabs -->
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tabAuthLogin" data-pane="paneAuthLogin">เข้าสู่ระบบ</button>
+        <button class="auth-tab" id="tabAuthRegister" data-pane="paneAuthRegister">สมัครสมาชิกใหม่</button>
+      </div>
+
+      <!-- Pane 1: Login -->
+      <div class="auth-pane" id="paneAuthLogin">
+        <div class="form-group" style="margin-bottom: 14px;">
+          <label class="form-label">ชื่อผู้ใช้ (Username)</label>
+          <input type="text" id="loginUsername" class="text-input" placeholder="กรอกชื่อผู้ใช้..." autocomplete="username">
+        </div>
+        <div class="form-group" style="margin-bottom: 16px;">
+          <label class="form-label">รหัสผ่าน (Password)</label>
+          <input type="password" id="loginPassword" class="text-input" placeholder="กรอกรหัสผ่าน..." autocomplete="current-password">
+        </div>
+        <div id="loginErrorMsg" class="auth-error-msg" style="display: none;"></div>
+        <button class="primary-action-btn" id="btnSubmitLogin" style="width: 100%;">
+          <span>🚀</span> เข้าสู่ระบบ
+        </button>
+      </div>
+
+      <!-- Pane 2: Register -->
+      <div class="auth-pane" id="paneAuthRegister" style="display: none;">
+        <div class="welcome-gift-badge">
+          🎉 สมัครวันนี้รับฟรีทันที! <b>🪙 1,000 เหรียญทอง</b> + <b>💎 50 เพชร</b>!
+        </div>
+        <div class="form-group" style="margin-bottom: 12px;">
+          <label class="form-label">ชื่อผู้ใช้สำหรับล็อกอิน (Username ภาษาอังกฤษ)</label>
+          <input type="text" id="regUsername" class="text-input" placeholder="เช่น player99" maxlength="20" autocomplete="username">
+        </div>
+        <div class="form-group" style="margin-bottom: 12px;">
+          <label class="form-label">ชื่อแสดงในเกม (Display Name)</label>
+          <input type="text" id="regDisplayName" class="text-input" placeholder="เช่น เซียนหมากสายฟ้า" maxlength="25">
+        </div>
+        <div class="form-group" style="margin-bottom: 16px;">
+          <label class="form-label">รหัสผ่าน (Password อย่างน้อย 4 ตัว)</label>
+          <input type="password" id="regPassword" class="text-input" placeholder="ตั้งรหัสผ่าน..." autocomplete="new-password">
+        </div>
+        <div id="regErrorMsg" class="auth-error-msg" style="display: none;"></div>
+        <button class="primary-action-btn" id="btnSubmitRegister" style="width: 100%;">
+          <span>🎁</span> สมัครสมาชิกและรับของขวัญ
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: PROFILE & AVATAR CUSTOMIZER -->
+  <div class="modal-backdrop" id="profileModal" style="display: none;">
+    <div class="modal-content profile-modal-content" style="max-width: 640px; max-height: 85vh; overflow-y: auto;">
+      <div class="modal-header">
+        <h3 class="modal-title" style="display: flex; align-items: center; gap: 8px;">
+          <span>👤</span> จัดการโปรไฟล์ & ปรับแต่งอวตาร
+        </h3>
+        <button class="close-btn" data-close="profileModal">✕</button>
+      </div>
+
+      <!-- User Big Profile Header -->
+      <div class="profile-header-card">
+        <div class="profile-avatar-large">
+          <div class="profile-frame frame_wood" id="profileBigFrame">
+            <span class="profile-icon" id="profileBigIcon">🐱</span>
+          </div>
+        </div>
+        <div class="profile-header-info">
+          <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+            <h2 id="profileDisplayName" style="font-size: 20px; font-weight: 800; color: #fff;">ผู้เล่น</h2>
+            <span class="user-level-badge large" id="profileLevelBadge">Lv.1</span>
+            <span id="profileRankBadge" style="font-size: 13px; font-weight: 700; background: rgba(0,0,0,0.4); padding: 3px 8px; border-radius: 6px; color: #fbbf24;">🥉 1200 RP</span>
+          </div>
+          <div style="margin-top: 6px;">
+            <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--text-secondary); margin-bottom: 3px;">
+              <span>EXP สะสม</span>
+              <span id="profileExpText">0 / 200</span>
+            </div>
+            <div class="exp-bar-container">
+              <div class="exp-bar-fill" id="profileExpBar" style="width: 0%;"></div>
+            </div>
+          </div>
+          <div class="profile-wallet-row" style="margin-top: 8px;">
+            <span class="wallet-badge coins">🪙 <b id="profileCoins">1,000</b> เหรียญ</span>
+            <span class="wallet-badge gems">💎 <b id="profileGems">50</b> เพชร</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Name Edit -->
+      <div class="form-group" style="margin-top: 14px;">
+        <label class="form-label" style="font-size: 12px;">เปลี่ยนชื่อในเกม (Display Name)</label>
+        <div style="display: flex; gap: 8px;">
+          <input type="text" id="inputEditDisplayName" class="text-input" placeholder="พิมพ์ชื่อใหม่..." maxlength="25" style="flex: 1;">
+          <button class="primary-action-btn" id="btnSaveDisplayName" style="width: auto; padding: 0 16px; font-size: 13px;">บันทึก</button>
+        </div>
+      </div>
+
+      <!-- Inventory Customize Tabs -->
+      <div class="profile-tabs" style="margin-top: 16px;">
+        <button class="profile-tab active" id="tabMyAvatars" data-pane="paneMyAvatars">🎭 อวตารของคุณ</button>
+        <button class="profile-tab" id="tabMyFrames" data-pane="paneMyFrames">🖼️ กรอบรูปของคุณ</button>
+      </div>
+
+      <!-- Pane 1: My Avatars Grid -->
+      <div class="profile-pane" id="paneMyAvatars">
+        <div class="inventory-grid" id="myAvatarsGrid">
+          <!-- Rendered via JS -->
+        </div>
+      </div>
+
+      <!-- Pane 2: My Frames Grid -->
+      <div class="profile-pane" id="paneMyFrames" style="display: none;">
+        <div class="inventory-grid" id="myFramesGrid">
+          <!-- Rendered via JS -->
+        </div>
+      </div>
+
+      <div style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 14px;">
+        <button class="icon-btn" id="btnGoShopFromProfile" style="color: #facc15; border-color: rgba(250, 204, 21, 0.4);">
+          <span>🛒</span> ไปร้านค้า
+        </button>
+        <button class="control-btn" id="btnLogout" style="color: #ef4444; border-color: rgba(239, 68, 68, 0.3);">
+          <span>🚪</span> ออกจากระบบ
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: SHOP & MONETIZATION -->
+  <div class="modal-backdrop" id="shopModal" style="display: none;">
+    <div class="modal-content shop-modal-content" style="max-width: 720px; max-height: 85vh; overflow-y: auto;">
+      <div class="modal-header">
+        <h3 class="modal-title" style="display: flex; align-items: center; gap: 8px;">
+          <span>🛒</span> ร้านค้าไอเทม & เติมเพชร
+        </h3>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div class="shop-wallet-badge coins">🪙 <span id="shopCoinsVal">1,000</span></div>
+          <div class="shop-wallet-badge gems">💎 <span id="shopGemsVal">50</span></div>
+          <button class="close-btn" data-close="shopModal">✕</button>
+        </div>
+      </div>
+
+      <!-- Shop Tabs -->
+      <div class="shop-tabs">
+        <button class="shop-tab active" id="tabShopAvatars" data-pane="paneShopAvatars">🎭 อวตาร (Avatars)</button>
+        <button class="shop-tab" id="tabShopFrames" data-pane="paneShopFrames">🖼️ กรอบรูป (Frames)</button>
+        <button class="shop-tab" id="tabShopTopup" data-pane="paneShopTopup">💎 เติมเพชร / สนับสนุน</button>
+      </div>
+
+      <!-- Shop Pane 1: Avatars -->
+      <div class="shop-pane" id="paneShopAvatars">
+        <div class="shop-items-grid" id="shopAvatarsGrid">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+
+      <!-- Shop Pane 2: Frames -->
+      <div class="shop-pane" id="paneShopFrames" style="display: none;">
+        <div class="shop-items-grid" id="shopFramesGrid">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+
+      <!-- Shop Pane 3: Top-up Packages -->
+      <div class="shop-pane" id="paneShopTopup" style="display: none;">
+        <div class="topup-banner">
+          <div style="font-size: 24px;">💎</div>
+          <div>
+            <div style="font-weight: 800; color: #38bdf8;">ระบบเติมเงินผ่านผู้ดูแลระบบ (Official Admin System)</div>
+            <div style="font-size: 12px; color: var(--text-secondary);">เพื่อความปลอดภัยและความยุติธรรม การเพิ่มเหรียญและเพชรดำเนินการผ่านแอดมินหรือระบบหลังบ้านเท่านั้น</div>
+          </div>
+        </div>
+        <div class="topup-packages-grid" id="shopTopupGrid">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: GAME HUB SELECTION MENU (WITH CATEGORIES & EXTENSIBLE ARCHITECTURE) -->
+  <div class="modal-backdrop" id="gameMenuModal" style="display: none;">
+    <div class="modal-content game-menu-modal-content">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div class="game-menu-header-badge">🎮</div>
+          <div>
+            <h2 class="modal-title" style="margin: 0; font-size: 20px; font-weight: 800; color: #f8fafc;">ศูนย์รวมเกมกระดาน (Board Games Hub)</h2>
+            <div style="font-size: 12px; color: var(--text-secondary); margin-top: 2px;">เลือกเล่นได้ทันที จัดแยกตามหมวดหมู่ หรือค้นหาเกมที่ต้องการ</div>
+          </div>
+        </div>
+        <button class="close-btn" data-close="gameMenuModal">✕</button>
+      </div>
+
+      <!-- Toolbar: Search & Category Filter Tabs -->
+      <div class="game-menu-toolbar">
+        <div class="game-menu-search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="gameMenuSearchInput" class="game-menu-search-input" placeholder="ค้นหาเกม... (เช่น หมากฮอส, Chess, โอเทลโล่, โดกาปอง)">
+          <button id="btnClearGameSearch" class="btn-clear-search" style="display: none;">✕</button>
+        </div>
+
+        <div class="game-category-tabs" id="gameCategoryTabs">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+
+      <!-- Games Body (Grouped by Category or Filtered) -->
+      <div class="game-menu-body" id="gameMenuGrid">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" style="display: none;" class="toast"></div>
+
+  <script src="/app.js?v=boardarena9"></script>
+</body>
+</html>

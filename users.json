@@ -1,0 +1,73 @@
+[
+  {
+    "id": "u_1793399589835_139",
+    "username": "mena1156",
+    "passwordHash": "3fa12a1fe1b215a32da20aa5b43c7e1f84df5685ce091a3f30ffb904fdb0a324",
+    "salt": "1b2d5f28d8567cb19f26d98d1b8ff125",
+    "displayName": "KaKaRos",
+    "avatar": "chess_king",
+    "frame": "frame_fire",
+    "coins": 1000,
+    "gems": 50,
+    "level": 1,
+    "exp": 0,
+    "stats": {
+      "mmr": 1200,
+      "wins": 0,
+      "losses": 0,
+      "draws": 0,
+      "matchCount": 0
+    },
+    "inventory": {
+      "avatars": [
+        "cat_ninja",
+        "cyber_fox",
+        "panda_master",
+        "demon_lord",
+        "chess_king"
+      ],
+      "frames": [
+        "frame_wood",
+        "frame_silver",
+        "frame_fire"
+      ]
+    },
+    "token": "123756c63fc26fa1885d8e5e32973a3d4a1f2175ff699271",
+    "createdAt": "2026-10-30T22:33:09.835Z",
+    "lastLogin": "2026-10-31T06:39:17.199Z"
+  },
+  {
+    "id": "u_1793434262129_405",
+    "username": "Buds",
+    "passwordHash": "97e8c15bb54b9d4033ceca283cf011873fda062d25bf0c652fc43e4a16fbdb75",
+    "salt": "189b6e62cfbebecb28d0f93543e1d6f8",
+    "displayName": "BooBuds",
+    "avatar": "cat_ninja",
+    "frame": "frame_wood",
+    "coins": 1000,
+    "gems": 50,
+    "level": 1,
+    "exp": 0,
+    "stats": {
+      "mmr": 1200,
+      "wins": 0,
+      "losses": 0,
+      "draws": 0,
+      "matchCount": 0
+    },
+    "inventory": {
+      "avatars": [
+        "cat_ninja",
+        "cyber_fox",
+        "panda_master"
+      ],
+      "frames": [
+        "frame_wood",
+        "frame_silver"
+      ]
+    },
+    "token": "8ae3579ecb0999fb172df4e30e6e418764a763f33e4eb513",
+    "createdAt": "2026-10-31T08:11:02.129Z",
+    "lastLogin": "2026-10-31T08:11:02.129Z"
+  }
+]

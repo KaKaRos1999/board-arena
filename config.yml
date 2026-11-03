@@ -1,0 +1,7 @@
+tunnel: e6b044aa-ba79-4add-99ae-651a65e67bbf
+credentials-file: C:\Users\gangz\.cloudflared\e6b044aa-ba79-4add-99ae-651a65e67bbf.json
+
+ingress:
+  - hostname: game.thaikub.xyz
+    service: http://127.0.0.1:3000
+  - service: http_status:404

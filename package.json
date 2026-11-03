@@ -1,0 +1,25 @@
+{
+  "name": "thai-checkers-online",
+  "version": "1.0.0",
+  "description": "หมากฮ็อตออนไลน์ เล่นกับเพื่อนได้ทันทีผ่านลิงก์หรือ QR Code และเล่นกับบอท AI",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node test-engine.js"
+  },
+  "keywords": [
+    "checkers",
+    "thai-checkers",
+    "หมากฮอส",
+    "หมากฮ็อต",
+    "multiplayer",
+    "socketio"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.3.0",
+    "qrcode": "^1.5.4",
+    "socket.io": "^4.8.4"
+  }
+}

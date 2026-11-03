@@ -1,0 +1,244 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" width="100%" height="100%">
+  <defs>
+    <!-- Sky Gradient -->
+    <linearGradient id="skyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#090514"/>
+      <stop offset="35%" stop-color="#180e29"/>
+      <stop offset="70%" stop-color="#1e1b4b"/>
+      <stop offset="100%" stop-color="#022c22"/>
+    </linearGradient>
+
+    <!-- Moon Glow -->
+    <radialGradient id="moonGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#fef08a" stop-opacity="1"/>
+      <stop offset="40%" stop-color="#fef9c3" stop-opacity="0.8"/>
+      <stop offset="70%" stop-color="#86efac" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#10b981" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Ghost Mist Glow -->
+    <radialGradient id="greenMist" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#4ade80" stop-opacity="0.35"/>
+      <stop offset="60%" stop-color="#22c55e" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#022c22" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Purple Mist Glow -->
+    <radialGradient id="purpleMist" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#c084fc" stop-opacity="0.3"/>
+      <stop offset="60%" stop-color="#7e22ce" stop-opacity="0.1"/>
+      <stop offset="100%" stop-color="#1e1b4b" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Tombstone Stone Gradients -->
+    <linearGradient id="stoneLight" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#64748b"/>
+      <stop offset="50%" stop-color="#475569"/>
+      <stop offset="100%" stop-color="#334155"/>
+    </linearGradient>
+    <linearGradient id="stoneDark" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#334155"/>
+      <stop offset="50%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+
+    <!-- Pumpkin Glow -->
+    <radialGradient id="pumpkinGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#fbbf24"/>
+      <stop offset="50%" stop-color="#ea580c"/>
+      <stop offset="100%" stop-color="#7c2d12"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Background Sky -->
+  <rect width="1600" height="1000" fill="url(#skyGrad)"/>
+
+  <!-- Distant Stars & Wisps -->
+  <g fill="#e2e8f0" opacity="0.6">
+    <circle cx="120" cy="80" r="1.5"/>
+    <circle cx="280" cy="140" r="2"/>
+    <circle cx="430" cy="60" r="1"/>
+    <circle cx="650" cy="110" r="2.5"/>
+    <circle cx="1150" cy="90" r="2"/>
+    <circle cx="1380" cy="130" r="1.5"/>
+    <circle cx="1520" cy="70" r="2"/>
+    <circle cx="950" cy="50" r="1.5"/>
+    <circle cx="820" cy="160" r="1"/>
+    <circle cx="340" cy="220" r="2"/>
+  </g>
+
+  <!-- Eerie Giant Full Moon -->
+  <circle cx="800" cy="280" r="240" fill="url(#moonGlow)"/>
+  <circle cx="800" cy="280" r="110" fill="#fef9c3"/>
+  <!-- Moon Craters -->
+  <ellipse cx="760" cy="250" rx="22" ry="16" fill="#fef08a" opacity="0.6"/>
+  <ellipse cx="830" cy="310" rx="28" ry="20" fill="#fef08a" opacity="0.6"/>
+  <ellipse cx="780" cy="320" rx="15" ry="12" fill="#fef08a" opacity="0.5"/>
+  <circle cx="850" cy="240" r="12" fill="#fef08a" opacity="0.5"/>
+
+  <!-- Spooky Floating Clouds across Moon -->
+  <path d="M480,240 Q620,220 780,250 Q960,280 1120,230 Q920,210 740,220 Q580,210 480,240 Z" fill="#090514" opacity="0.75"/>
+  <path d="M600,320 Q750,290 920,330 Q1080,310 1200,340 Q1020,360 840,340 Q690,350 600,320 Z" fill="#180e29" opacity="0.7"/>
+
+  <!-- Far Distant Mountain & Old Mausoleum Silhouette -->
+  <path d="M0,620 L250,560 L450,590 L700,530 L800,480 L830,480 L840,460 L870,460 L880,510 L1050,550 L1350,520 L1600,580 L1600,1000 L0,1000 Z" fill="#0c0717"/>
+  <!-- Gothic Castle / Cathedral silhouette on high ridge -->
+  <g fill="#090412">
+    <!-- Castle Spire Left -->
+    <polygon points="760,530 780,440 800,530"/>
+    <line x1="780" y1="440" x2="780" y2="420" stroke="#090412" stroke-width="3"/>
+    <line x1="774" y1="426" x2="786" y2="426" stroke="#090412" stroke-width="2"/>
+    <!-- Central Crypt Mausoleum -->
+    <rect x="800" y="470" width="80" height="60"/>
+    <polygon points="790,470 840,410 890,470"/>
+    <line x1="840" y1="410" x2="840" y2="385" stroke="#090412" stroke-width="4"/>
+    <line x1="830" y1="395" x2="850" y2="395" stroke="#090412" stroke-width="3"/>
+    <!-- Gothic arched crypt door with green eerie glow -->
+    <ellipse cx="840" cy="510" rx="14" ry="20" fill="#4ade80" opacity="0.75"/>
+  </g>
+
+  <!-- Midground Cemetery Hill -->
+  <path d="M0,680 Q400,600 800,670 Q1200,620 1600,690 L1600,1000 L0,1000 Z" fill="#111827"/>
+
+  <!-- Midground Distant Tombstones & Crosses -->
+  <g fill="#1f2937">
+    <!-- Cross 1 -->
+    <rect x="220" y="600" width="10" height="45" rx="2"/>
+    <rect x="210" y="612" width="30" height="8" rx="2"/>
+    <!-- Headstone 1 -->
+    <path d="M340,640 L340,610 A15,15 0 0,1 370,610 L370,640 Z"/>
+    <!-- Headstone 2 tilted -->
+    <path d="M520,635 L525,605 A14,14 0 0,1 555,608 L550,638 Z" transform="rotate(-6, 535, 620)"/>
+    <!-- Cross 2 -->
+    <rect x="1080" y="590" width="12" height="55" rx="2" transform="rotate(5, 1086, 617)"/>
+    <rect x="1068" y="605" width="36" height="10" rx="2" transform="rotate(5, 1086, 617)"/>
+    <!-- Large Obelisk Monument -->
+    <polygon points="1260,650 1270,570 1275,560 1280,570 1290,650"/>
+    <!-- Cross 3 -->
+    <rect x="1440" y="620" width="10" height="40" rx="2"/>
+    <rect x="1432" y="630" width="26" height="7" rx="2"/>
+  </g>
+
+  <!-- Glowing Ghost Mist Layer 1 -->
+  <ellipse cx="400" cy="720" rx="350" ry="80" fill="url(#greenMist)"/>
+  <ellipse cx="1200" cy="700" rx="420" ry="90" fill="url(#purpleMist)"/>
+  <ellipse cx="800" cy="740" rx="450" ry="70" fill="url(#greenMist)"/>
+
+  <!-- Foreground Cemetery Hills -->
+  <path d="M-50,780 Q350,680 750,770 Q1150,710 1650,800 L1650,1050 L-50,1050 Z" fill="#090d16"/>
+  <path d="M-50,850 Q450,760 900,840 Q1350,770 1650,860 L1650,1050 L-50,1050 Z" fill="#04060a"/>
+
+  <!-- Twisted Creepy Dead Trees (Left & Right) -->
+  <!-- Tree Left -->
+  <g fill="#070a10">
+    <path d="M-20,950 Q40,750 30,550 Q60,420 15,300 Q20,380 -5,440 Q-30,480 -80,500 L-80,950 Z"/>
+    <!-- Main branches -->
+    <path d="M30,550 Q90,480 160,460 Q120,490 80,520 Q120,540 180,520 Q110,560 40,570 Z"/>
+    <path d="M20,430 Q80,360 120,310 Q80,340 50,380 Q90,370 150,340 Q70,390 15,440 Z"/>
+    <path d="M15,300 Q60,220 110,160 Q80,210 40,250 Q80,230 130,200 Q50,260 0,310 Z"/>
+    <path d="M-5,440 Q-40,360 -70,300 Q-50,360 -25,410 Z"/>
+  </g>
+  <!-- Tree Right -->
+  <g fill="#070a10">
+    <path d="M1620,950 Q1560,730 1570,530 Q1530,380 1580,250 Q1570,340 1595,420 Q1630,470 1680,500 L1680,950 Z"/>
+    <path d="M1570,530 Q1500,470 1420,450 Q1460,480 1510,510 Q1450,530 1390,520 Q1470,550 1550,560 Z"/>
+    <path d="M1575,410 Q1510,340 1460,290 Q1500,320 1540,360 Q1480,350 1420,330 Q1510,380 1570,420 Z"/>
+    <path d="M1580,250 Q1530,170 1470,120 Q1510,170 1545,210 Q1490,200 1440,180 Q1530,230 1585,270 Z"/>
+  </g>
+
+  <!-- Large Foreground Detailed Tombstones -->
+  <!-- Tombstone 1: Large Celtic / Gothic Cross (Left) -->
+  <g transform="translate(180, 680) rotate(-4)">
+    <!-- Base stone -->
+    <rect x="-10" y="160" width="90" height="25" rx="4" fill="url(#stoneDark)"/>
+    <rect x="0" y="145" width="70" height="20" rx="3" fill="url(#stoneLight)"/>
+    <!-- Vertical shaft -->
+    <rect x="23" y="10" width="24" height="140" rx="4" fill="url(#stoneLight)"/>
+    <!-- Horizontal beam -->
+    <rect x="-5" y="45" width="80" height="22" rx="4" fill="url(#stoneLight)"/>
+    <!-- Celtic halo ring -->
+    <circle cx="35" cy="56" r="30" fill="none" stroke="url(#stoneLight)" stroke-width="7"/>
+    <!-- Engraved RIP -->
+    <text x="35" y="105" font-family="'Times New Roman', serif" font-weight="bold" font-size="14" fill="#0f172a" text-anchor="middle" letter-spacing="3">R.I.P</text>
+    <!-- Crack on stone -->
+    <path d="M35,30 L30,45 L38,60 L28,80" fill="none" stroke="#1e293b" stroke-width="1.8"/>
+    <!-- Green moss on base -->
+    <ellipse cx="20" cy="165" rx="18" ry="6" fill="#15803d" opacity="0.8"/>
+    <ellipse cx="60" cy="163" rx="14" ry="5" fill="#22c55e" opacity="0.6"/>
+  </g>
+
+  <!-- Tombstone 2: Classic Arched Headstone with Skull / R.I.P (Right) -->
+  <g transform="translate(1320, 690) rotate(5)">
+    <!-- Base -->
+    <rect x="-15" y="150" width="110" height="28" rx="4" fill="url(#stoneDark)"/>
+    <!-- Arch body -->
+    <path d="M0,150 L0,40 A40,40 0 0,1 80,40 L80,150 Z" fill="url(#stoneLight)"/>
+    <path d="M6,145 L6,43 A34,34 0 0,1 74,43 L74,145 Z" fill="url(#stoneDark)"/>
+    <!-- Winged skull or cross emblem on headstone -->
+    <circle cx="40" cy="48" r="10" fill="#cbd5e1"/>
+    <circle cx="37" cy="47" r="2.5" fill="#090d16"/>
+    <circle cx="43" cy="47" r="2.5" fill="#090d16"/>
+    <!-- Text -->
+    <text x="40" y="80" font-family="'Times New Roman', serif" font-weight="900" font-size="16" fill="#e2e8f0" text-anchor="middle" letter-spacing="4">R.I.P</text>
+    <text x="40" y="102" font-family="serif" font-size="11" fill="#94a3b8" text-anchor="middle">1888 - 1924</text>
+    <line x1="20" y1="112" x2="60" y2="112" stroke="#475569" stroke-width="1.5"/>
+    <text x="40" y="128" font-family="serif" font-style="italic" font-size="9" fill="#64748b" text-anchor="middle">Forever Asleep</text>
+    <!-- Stone crack -->
+    <path d="M60,30 L52,48 L58,65 L50,82" fill="none" stroke="#090d16" stroke-width="2"/>
+    <!-- Moss -->
+    <ellipse cx="15" cy="150" rx="20" ry="7" fill="#15803d" opacity="0.85"/>
+  </g>
+
+  <!-- Glowing Jack-o'-Lantern Pumpkin (Foreground Center-Left) -->
+  <g transform="translate(420, 780)">
+    <!-- Pumpkin Body -->
+    <ellipse cx="40" cy="40" rx="36" ry="28" fill="url(#pumpkinGlow)"/>
+    <ellipse cx="40" cy="40" rx="22" ry="29" fill="url(#pumpkinGlow)"/>
+    <!-- Stem -->
+    <path d="M38,13 Q42,5 48,7 L45,14 Z" fill="#15803d"/>
+    <!-- Carved Face Glow -->
+    <!-- Eyes -->
+    <polygon points="26,30 34,30 30,22" fill="#fef08a" stroke="#ea580c" stroke-width="1.2"/>
+    <polygon points="46,30 54,30 50,22" fill="#fef08a" stroke="#ea580c" stroke-width="1.2"/>
+    <!-- Nose -->
+    <polygon points="40,34 37,39 43,39" fill="#fef08a"/>
+    <!-- Tooth grin mouth -->
+    <path d="M22,46 Q40,58 58,46 L53,49 L49,46 L45,49 L40,46 L35,49 L31,46 L27,49 Z" fill="#fef08a" stroke="#ea580c" stroke-width="1.2"/>
+    <!-- Outer candle cast glow -->
+    <circle cx="40" cy="40" r="45" fill="url(#pumpkinGlow)" opacity="0.25"/>
+  </g>
+
+  <!-- Second Old Tilted Tombstone (Foreground Center-Right) -->
+  <g transform="translate(1080, 770) rotate(-8)">
+    <rect x="-8" y="120" width="86" height="22" rx="3" fill="url(#stoneDark)"/>
+    <path d="M0,120 L0,30 L70,30 L70,120 Z" fill="url(#stoneLight)"/>
+    <polygon points="0,30 35,5 70,30" fill="url(#stoneLight)"/>
+    <path d="M5,115 L5,32 L35,12 L65,32 L65,115 Z" fill="url(#stoneDark)"/>
+    <text x="35" y="55" font-family="'Times New Roman', serif" font-weight="bold" font-size="13" fill="#cbd5e1" text-anchor="middle">R • I • P</text>
+    <!-- Cross engraved -->
+    <line x1="35" y1="65" x2="35" y2="90" stroke="#94a3b8" stroke-width="2.5"/>
+    <line x1="25" y1="73" x2="45" y2="73" stroke="#94a3b8" stroke-width="2.5"/>
+  </g>
+
+  <!-- Glowing Ghost Wisps Floating from Graves -->
+  <!-- Ghost Wisp 1 -->
+  <g transform="translate(290, 670)" opacity="0.85">
+    <ellipse cx="0" cy="0" rx="14" ry="24" fill="#86efac" filter="drop-shadow(0 0 12px #22c55e)"/>
+    <circle cx="-3" cy="-6" r="3" fill="#064e3b"/>
+    <circle cx="4" cy="-6" r="3" fill="#064e3b"/>
+    <path d="M-8,14 Q0,32 6,24 Q-2,36 -2,45" fill="none" stroke="#86efac" stroke-width="3"/>
+  </g>
+  <!-- Ghost Wisp 2 (Purple) -->
+  <g transform="translate(1240, 680)" opacity="0.8">
+    <ellipse cx="0" cy="0" rx="12" ry="20" fill="#d8b4fe" filter="drop-shadow(0 0 12px #a855f7)"/>
+    <circle cx="-3" cy="-5" r="2.5" fill="#3b0764"/>
+    <circle cx="4" cy="-5" r="2.5" fill="#3b0764"/>
+    <path d="M-6,12 Q0,28 5,20 Q-1,32 -1,40" fill="none" stroke="#d8b4fe" stroke-width="2.5"/>
+  </g>
+
+  <!-- Thick Layer of Graveyard Fog at Bottom -->
+  <path d="M0,900 Q200,850 500,890 Q800,860 1100,890 Q1400,860 1600,900 L1600,1000 L0,1000 Z" fill="#0f172a" opacity="0.85"/>
+  <ellipse cx="300" cy="940" rx="350" ry="60" fill="url(#greenMist)"/>
+  <ellipse cx="1300" cy="930" rx="380" ry="70" fill="url(#greenMist)"/>
+  <ellipse cx="800" cy="950" rx="420" ry="60" fill="url(#purpleMist)"/>
+</svg>

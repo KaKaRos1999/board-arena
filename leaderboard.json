@@ -1,0 +1,86 @@
+[
+  {
+    "name": "เซียนโอ๋ บางแค",
+    "mmr": 2280,
+    "wins": 142,
+    "losses": 18,
+    "draws": 9
+  },
+  {
+    "name": "อาจารย์เดชา",
+    "mmr": 2150,
+    "wins": 118,
+    "losses": 24,
+    "draws": 12
+  },
+  {
+    "name": "KingOfCheckers",
+    "mmr": 1980,
+    "wins": 95,
+    "losses": 31,
+    "draws": 8
+  },
+  {
+    "name": "น้องน้ำหวาน_Pro",
+    "mmr": 1860,
+    "wins": 78,
+    "losses": 26,
+    "draws": 5
+  },
+  {
+    "name": "สายฟ้าแลบ_TH",
+    "mmr": 1740,
+    "wins": 64,
+    "losses": 30,
+    "draws": 7
+  },
+  {
+    "name": "สิงห์สนามหลวง",
+    "mmr": 1620,
+    "wins": 53,
+    "losses": 28,
+    "draws": 4
+  },
+  {
+    "name": "CheckerMaster99",
+    "mmr": 1540,
+    "wins": 41,
+    "losses": 22,
+    "draws": 6
+  },
+  {
+    "name": "นักเดินกระดานดำ",
+    "mmr": 1480,
+    "wins": 36,
+    "losses": 25,
+    "draws": 3
+  },
+  {
+    "name": "มือใหม่หัดฮอส",
+    "mmr": 1320,
+    "wins": 22,
+    "losses": 19,
+    "draws": 2
+  },
+  {
+    "name": "KaKaRos",
+    "mmr": 1240,
+    "wins": 2,
+    "losses": 1,
+    "draws": 0
+  },
+  {
+    "name": "นักสู้หมากฮอส",
+    "mmr": 1220,
+    "wins": 2,
+    "losses": 0,
+    "draws": 0
+  },
+  {
+    "name": "Buds",
+    "mmr": 1217,
+    "wins": 1,
+    "losses": 0,
+    "draws": 0
+  }
+]
